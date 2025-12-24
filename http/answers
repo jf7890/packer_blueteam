@@ -1,0 +1,64 @@
+# Example answer file for setup-alpine script
+# If you don't want to use a certain option, then comment it out
+
+KEYMAPOPTS="us us"
+HOSTNAMEOPTS="-n blue-router"
+DEVDOPTS="mdev"
+
+# /etc/network/interfaces (ifupdown-ng style)
+INTERFACESOPTS="auto lo
+iface lo inet loopback
+
+auto eth0
+iface eth0 inet static
+  address 10.10.100.2/24
+  gateway 10.10.100.1
+
+auto eth1
+iface eth1 inet static
+  address 10.10.101.2/30
+
+auto eth2
+iface eth2 inet static
+  address 172.16.50.1/24
+
+auto eth3
+iface eth3 inet static
+  address 10.10.172.1/24
+"
+
+# DNS servers (space separated allowed)
+DNSOPTS="-n 1.1.1.1"
+
+TIMEZONEOPTS="-z Asia/Ho_Chi_Minh"
+PROXYOPTS="none"
+
+# First mirror + community repo
+APKREPOSOPTS="-1 -c"
+
+# Install OpenSSH during install
+SSHDOPTS="-c openssh"
+
+# Root SSH key for KEY-ONLY login (replace with YOUR PUBLIC KEY)
+# You can paste the public key directly (recommended for packer), or a URL to a .keys file.
+ROOTSSHKEY="ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIC5JU9neFzrsWZKMtEJ1lTcWLvhvKqQUd80/Nla7oqT blue-router"
+#PRIVATE: -----BEGIN OPENSSH PRIVATE KEY-----
+# b3BlbnNzaC1rZXktdjEAAAAABG5vbmUAAAAEbm9uZQAAAAAAAAABAAAAMwAAAAtzc2gtZW
+# QyNTUxOQAAACCAuSVPZ3hc67FmSjLRCdZU3Fi74byqkFHfNPzZWu6KkwAAAJAWKGFNFihh
+# TQAAAAtzc2gtZWQyNTUxOQAAACCAuSVPZ3hc67FmSjLRCdZU3Fi74byqkFHfNPzZWu6Kkw
+# AAAEDhdY7qNIEhh5s8rTotYQeFLaS2N/TLZpoFifWxUezYxIC5JU9neFzrsWZKMtEJ1lTc
+# WLvhvKqQUd80/Nla7oqTAAAAC2JsdWUtcm91dGVyAQI=
+# -----END OPENSSH PRIVATE KEY-----
+# Optional: create an admin user and key (uncomment if you want non-root login)
+#USEROPTS="-a -g wheel,netdev blueadmin"
+#USERSSHKEY="ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAREPLACE_ME_WITH_YOUR_PUBLIC_KEY blueadmin@packer"
+
+# NTP
+NTPOPTS="-c openntpd"
+
+# Disk install (sys mode) onto virtio disk
+DISKOPTS="-L -m sys /dev/vda"
+
+# Disable LBU/apk cache for sys install
+LBUOPTS="none"
+APKCACHEOPTS="none"
