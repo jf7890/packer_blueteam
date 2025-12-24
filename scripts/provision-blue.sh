@@ -72,11 +72,11 @@ ip link set eth2 up 2>/dev/null || true
 ip link set eth3 up 2>/dev/null || true
 
 # Transit
-ip addr replace 10.10.101.5/30 dev eth1 2>/dev/null || true
+ip addr replace 10.10.101.1/30 dev eth1 2>/dev/null || true
 # DMZ
-ip addr replace 172.16.50.5/24 dev eth2 2>/dev/null || true
+ip addr replace 172.16.50.1/24 dev eth2 2>/dev/null || true
 # Blue LAN
-ip addr replace 10.10.172.5/24 dev eth3 2>/dev/null || true
+ip addr replace 10.10.172.1/24 dev eth3 2>/dev/null || true
 
 # 2) Persist vào /etc/network/interfaces (rewrite phần eth1/eth2/eth3 cho sạch)
 IF_FILE="/etc/network/interfaces"
@@ -106,17 +106,17 @@ if [ -f "$IF_FILE" ]; then
 # --- Added by provision-blue.sh ---
 auto eth1
 iface eth1 inet static
-    address 10.10.101.5
+    address 10.10.101.1
     netmask 255.255.255.252
 
 auto eth2
 iface eth2 inet static
-    address 172.16.50.5
+    address 172.16.50.1
     netmask 255.255.255.0
 
 auto eth3
 iface eth3 inet static
-    address 10.10.172.5
+    address 10.10.172.1
     netmask 255.255.255.0
 EOF
 
@@ -199,7 +199,7 @@ service integrated-vtysh-config
 !
 router ospf
  ospf router-id 10.10.100.21
- network 10.10.101.4/30 area 0
+ network 10.10.101.0/30 area 0
  network 10.10.172.0/24 area 0
 !
 line vty
