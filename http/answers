@@ -11,7 +11,7 @@ iface lo inet loopback
 
 auto eth0
 iface eth0 inet static
-  address 10.10.100.2/24
+  address 10.10.100.21/24
   gateway 10.10.100.1
 
 auto eth1
@@ -57,7 +57,7 @@ ROOTSSHKEY="ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIC5JU9neFzrsWZKMtEJ1lTcWLvhvKqQ
 NTPOPTS="-c openntpd"
 
 # Disk install (sys mode) onto virtio disk
-DISKOPTS="-L -m sys /dev/vda"
+DISKOPTS="-L -m sys /dev/sda"
 
 # Disable LBU/apk cache for sys install
 LBUOPTS="none"
