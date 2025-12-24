@@ -1,105 +1,83 @@
-variable "proxmox_url" {
-  type        = string
-  description = "Proxmox API URL, e.g. https://pve:8006/api2/json"
-}
-
-variable "proxmox_username" {
-  type        = string
-  description = "Proxmox username incl. realm. For token auth: user@realm!tokenid"
-}
-
-variable "proxmox_token" {
-  type        = string
-  sensitive   = true
-  description = "Proxmox API token secret (NOT the token id)."
-}
-
-variable "proxmox_node" {
-  type        = string
-  description = "Proxmox node name to build on."
-}
+# =========================
+# Proxmox connection
+# =========================
+variable "proxmox_url" { type = string }
+variable "proxmox_username" { type = string }
+variable "proxmox_token" { type = string, sensitive = true }
+variable "proxmox_node" { type = string }
 
 variable "proxmox_insecure_skip_tls_verify" {
-  type        = bool
-  default     = true
-  description = "Skip TLS verify for Proxmox API."
+  type    = bool
+  default = true
 }
 
 variable "vm_id" {
-  type        = number
-  default     = 0
-  description = "Optional fixed VMID. Set 0 to auto-assign."
-}
-
-variable "template_prefix" {
-  type    = string
-  default = "tpl"
-}
-
-variable "hostname" {
-  type    = string
-  default = "blue-router"
-}
-
-variable "disk_storage_pool" {
-  type    = string
-  default = "local-lvm"
-}
-
-variable "disk_size" {
-  type    = string
-  default = "8G"
-}
-
-variable "cpu_cores" {
   type    = number
-  default = 2
+  default = 0
 }
 
-variable "memory_mb" {
-  type    = number
-  default = 512
+# =========================
+# ISO download (public source)
+# =========================
+variable "iso_url" {
+  type    = string
+  default = "https://dl-cdn.alpinelinux.org/alpine/v3.23/releases/x86_64/alpine-standard-3.23.2-x86_64.iso"
 }
 
+# Packer checksum format thường là "sha256:<hash>"
+variable "iso_checksum" {
+  type = string
+}
+
+variable "iso_storage_pool" {
+  type    = string
+  default = "hdd-data"
+}
+
+variable "iso_download_pve" {
+  type    = bool
+  default = true
+}
+
+variable "unmount_iso" {
+  type    = bool
+  default = true
+}
+
+# =========================
+# VM sizing
+# =========================
+variable "disk_storage_pool" { type = string }
+variable "disk_size" { type = string }
+variable "cpu_cores" { type = number }
+variable "memory_mb" { type = number }
+
+variable "template_prefix" { type = string, default = "tpl" }
+variable "hostname" { type = string, default = "blue-router" }
+
+# =========================
+# Bridges
+# =========================
 variable "wan_bridge"     { type = string }
 variable "transit_bridge" { type = string }
 variable "dmz_bridge"     { type = string }
 variable "blue_bridge"    { type = string }
 
-# Live ISO bootstrapping (to fetch answerfile)
-variable "live_wan_iface" {
-  type        = string
-  default     = "eth0"
-  description = "Interface name in the live ISO environment (usually eth0)."
-}
+# =========================
+# Live ISO bootstrap network
+# =========================
+variable "live_wan_iface" { type = string, default = "eth0" }
+variable "wan_ip_cidr" { type = string }
+variable "wan_gateway" { type = string }
+variable "dns_server" { type = string, default = "1.1.1.1" }
 
-variable "wan_ip_cidr" {
-  type        = string
-  description = "WAN IP/CIDR for the Blue router (also used during live ISO bootstrap), e.g. 10.10.100.21/24"
-}
-
-variable "wan_gateway" {
-  type        = string
-  description = "WAN gateway, e.g. 10.10.100.1"
-}
-
-variable "dns_server" {
-  type    = string
-  default = "1.1.1.1"
-}
-
-variable "ssh_host" {
-  type        = string
-  description = "IP that Packer will SSH to after install, e.g. 10.10.100.21"
-}
-
-variable "ssh_private_key_file" {
-  type        = string
-  description = "Private key path that matches ROOTSSHKEY in http/answers (e.g. /root/.ssh/id_ed25519)."
-}
+# =========================
+# SSH for packer provision
+# =========================
+variable "ssh_host" { type = string }
+variable "ssh_private_key_file" { type = string }
 
 variable "answerfile_name" {
-  type        = string
-  default     = "answers"
-  description = "Filename inside http/ used as setup-alpine answerfile."
+  type    = string
+  default = "answers"
 }

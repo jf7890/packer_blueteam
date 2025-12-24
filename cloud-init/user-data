@@ -1,4 +1,0 @@
-#cloud-config
-# Placeholder for future: only effective if you install & enable cloud-init in the guest.
-ssh_pwauth: false
-disable_root: false
