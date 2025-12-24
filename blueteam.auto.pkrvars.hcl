@@ -38,7 +38,7 @@ wan_gateway    = "10.10.100.1"
 dns_server     = "1.1.1.1"
 
 # Packer will SSH to this after install:
-ssh_host = "10.10.100.2"
+ssh_host = "10.10.100.21"
 
 # IMPORTANT: private key corresponding to ROOTSSHKEY in http/answers
 ssh_private_key_file = "~/.ssh/id_ed25519"
