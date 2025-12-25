@@ -235,6 +235,14 @@ datasource:
     fs_label: cidata
 EOF
 
+# Tắt cloud-init network module (đây là cái đang overwrite interfaces của bạn)
+cat > /etc/cloud/cloud.cfg.d/99-disable-network-config.cfg <<'EOF'
+network: {config: disabled}
+EOF
+
+# Clean để khi clone thì cloud-init vẫn chạy user-data, nhưng không phá network nữa
+cloud-init clean --logs > /dev/null 2>&1 || true
+
 echo "[+] Cleaning cloud-init state/logs..."
 cloud-init clean -l > /dev/null 2>&1 || true
 rm -rf /var/lib/cloud/* > /dev/null 2>&1 || true
