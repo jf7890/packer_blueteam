@@ -67,19 +67,6 @@ variable "memory_mb" {
   description = "Memory in MB"
 }
 
-# naming
-variable "template_prefix" {
-  type        = string
-  default     = "tpl"
-  description = "Template name prefix"
-}
-
-variable "hostname" {
-  type        = string
-  default     = "blue-router"
-  description = "Hostname (also used in template name)"
-}
-
 # portable options
 variable "iso_storage_pool" {
   type        = string
