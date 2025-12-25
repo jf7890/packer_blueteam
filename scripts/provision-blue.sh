@@ -233,6 +233,10 @@ datasource:
     fs_label: cidata
 EOF
 
+echo "[+] Cleaning cloud-init state/logs..."
+cloud-init clean -l > /dev/null 2>&1 || true
+rm -rf /var/lib/cloud/* > /dev/null 2>&1 || true
+
 # --- FIX QUAN TRỌNG CHO ALPINE ---
 # QEMU Agent gọi lệnh 'shutdown' nhưng Alpine chỉ có 'poweroff'.
 if [ ! -f /sbin/shutdown ]; then
