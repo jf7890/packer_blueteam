@@ -140,51 +140,72 @@ echo "[+] Configure nftables..."
 cat > /etc/nftables.conf <<'EOF'
 flush ruleset
 
+# --- ĐỊNH NGHĨA BIẾN ---
+# eth0 là WAN (Internet) - Nơi sẽ thực hiện NAT
+define WAN_IF = "eth0"
+
+# eth1 là OSPF Link - Tuyệt đối không NAT traffic OSPF trên cổng này
+define OSPF_IF = "eth1"
+
+# Các cổng LAN nội bộ
+define LAN_IFS = { "eth2", "eth3" }
+define ALL_INTERNAL = { "eth1", "eth2", "eth3" }
+
 table inet filter {
-  chain input {
-    type filter hook input priority 0; policy drop;
+    chain input {
+        type filter hook input priority 0; policy drop;
 
-    iif "lo" accept
-    ct state established,related accept
+        # 1. Chấp nhận traffic cơ bản
+        iif "lo" accept
+        ct state established,related accept
 
-    tcp dport 22 accept
-    ip protocol icmp accept
+        # 2. Quản trị (SSH, Ping)
+        tcp dport 22 accept
+        ip protocol icmp accept
 
-    # OSPF (IP proto 89) is CONTROL-PLANE traffic: must be accepted in INPUT.
-    ip protocol ospf accept
+        # 3. Giao thức định tuyến (OSPF) - BẮT BUỘC
+        # Cho phép router nhận gói tin OSPF từ hàng xóm
+        ip protocol ospf accept
+        ip protocol igmp accept
 
-    # Allow traffic coming to the router itself from internal NICs
-    iifname { "eth1", "eth2", "eth3" } accept
-  }
+        # 4. Cho phép mạng nội bộ truy cập router
+        iifname $ALL_INTERNAL accept
+    }
 
-  chain forward {
-    type filter hook forward priority 0; policy drop;
+    chain forward {
+        type filter hook forward priority 0; policy drop;
 
-    ct state established,related accept
+        ct state established,related accept
 
-    # NATed egress to WAN (Blue LAN + DMZ -> eth0)
-    iifname { "eth2", "eth3" } oifname "eth0" accept
+        # 1. Cho phép LAN ra Internet (qua eth0)
+        iifname $LAN_IFS oifname $WAN_IF accept
 
-    # Transit forwarding between internal networks via eth1
-    # Allow only explicit internal paths; do NOT blanket-accept all eth1 traffic.
-    iifname "eth1" oifname { "eth2", "eth3" } accept
-    iifname { "eth2", "eth3" } oifname "eth1" accept
-  }
+        # 2. Cho phép Router OSPF (eth1) ra Internet (nếu cần update/ping)
+        iifname $OSPF_IF oifname $WAN_IF accept
 
-  chain output {
-    type filter hook output priority 0; policy accept;
-  }
+        # 3. Routing giữa các mạng nội bộ (LAN <-> OSPF Link)
+        iifname $OSPF_IF oifname $LAN_IFS accept
+        iifname $LAN_IFS oifname $OSPF_IF accept
+    }
+
+    chain output {
+        type filter hook output priority 0; policy accept;
+    }
 }
 
 table ip nat {
-  chain prerouting {
-    type nat hook prerouting priority -100;
-  }
+    chain prerouting {
+        type nat hook prerouting priority -100;
+    }
 
-  chain postrouting {
-    type nat hook postrouting priority 100;
-    oif "eth0" ip saddr { 172.16.50.0/24, 10.10.172.0/24 } masquerade
-  }
+    chain postrouting {
+        type nat hook postrouting priority 100;
+
+        # --- ĐÂY LÀ DÒNG BẠN YÊU CẦU ---
+        # Tương đương: iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE
+        # Ý nghĩa: Cứ hễ đi ra cổng WAN (eth0) là NAT hết.
+        oifname $WAN_IF masquerade
+    }
 }
 EOF
 
