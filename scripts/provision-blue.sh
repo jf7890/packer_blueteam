@@ -13,7 +13,8 @@ apk add --no-cache \
   qemu-guest-agent \
   cloud-init \
   cloud-init-openrc \
-  busybox-extras
+  busybox-extras \
+  dnsmasq
 
 # ---- SSH hardening: do NOT restart networking; minimize sshd restarts ----
 echo "[+] Ensure sshd runtime dir exists..."
@@ -190,6 +191,11 @@ for IF in $LAN_IFS; do
   iptables -A FORWARD -i "$IF" -o "$OSPF_IF" -j ACCEPT
 done
 
+# INPUT: Cho phép DHCP Request từ nội bộ (Port 67/68)
+for IF in $LAN_IFS; do
+  iptables -A INPUT -i "$IF" -p udp --dport 67 --sport 68 -j ACCEPT
+done
+
 # NAT all out WAN
 iptables -t nat -A POSTROUTING -o "$WAN_IF" -j MASQUERADE
 
@@ -209,6 +215,34 @@ if [ -f /etc/frr/daemons ]; then
     -e 's/^isisd=.*/isisd=no/' \
     /etc/frr/daemons || true
 fi
+
+# ==========================================================
+# [DHCP] Configure Dnsmasq for eth2 (DMZ) and eth3 (Blue)
+# ==========================================================
+echo "[+] Configuring Dnsmasq DHCP Server..."
+
+cat > /etc/dnsmasq.conf <<EOF
+interface=eth2
+interface=eth3
+bind-interfaces
+
+# --- Cấu hình cho DMZ (eth2) ---
+# Dải IP: .100 -> .200, Lease time: 24h
+dhcp-range=set:dmz_net,172.16.50.100,172.16.50.200,24h
+dhcp-option=tag:dmz_net,option:router,172.16.50.1
+dhcp-option=tag:dmz_net,option:dns-server,8.8.8.8
+
+# --- Cấu hình cho Blue Net (eth3) ---
+dhcp-range=set:blue_net,10.10.172.100,10.10.172.200,24h
+dhcp-option=tag:blue_net,option:router,10.10.172.1
+dhcp-option=tag:blue_net,option:dns-server,1.1.1.1
+
+# Log file (giảm thiểu ghi vào console automation)
+log-facility=/var/log/dnsmasq.log
+EOF
+
+rc-update add dnsmasq default || true
+rc-service dnsmasq restart > /dev/null 2>&1 || true
 
 # OSPF:
 # - chỉ chạy hello trên eth1 (transit)
