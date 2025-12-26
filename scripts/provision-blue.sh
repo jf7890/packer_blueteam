@@ -203,6 +203,8 @@ service integrated-vtysh-config
 !
 router ospf
  ospf router-id 10.10.101.1
+ passive-interface default
+ no passive-interface eth1
  network 10.10.101.0/30 area 0
  network 10.10.172.0/24 area 0
 !
