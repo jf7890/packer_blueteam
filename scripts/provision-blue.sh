@@ -142,7 +142,7 @@ OSPF_IF="eth1"
 LAN_IFS="eth2 eth3"    # DMZ + BLUE
 
 # DMZ reverse-proxy/nginx-love IP tĩnh (SỬA ĐÚNG IP CỦA BẠN)
-DMZ_WEB_IP="172.16.50.250"   # add
+DMZ_WEB_IP="172.16.50.5"
 
 iptables -F
 iptables -t nat -F
