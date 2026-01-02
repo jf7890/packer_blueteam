@@ -143,10 +143,10 @@ DMZ_IF="eth2"
 BLUE_IF="eth3"
 
 TRANSIT_IP="10.10.101.1"     # add: IP of eth1 on BLUE router (permanent)
-DMZ_WEB_IP="172.16.50.5"     # add: nginx-love (DMZ) static IP
+DMZ_WEB_IP="172.16.50.5"
 
 # add: IP Wazuh Manager in BLUE VNet 
-WAZUH_MGR_IP="10.10.172.10"  # add: đổi theo thực tế
+WAZUH_MGR_IP="10.10.172.10"
 
 iptables -F
 iptables -t nat -F
