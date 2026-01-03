@@ -19,5 +19,5 @@ wan_bridge              = "vmbr10"
 cloud_init_storage_pool = "local-lvm"
 
 dns_server = "1.1.1.1"
-ssh_private_key = "~/.ssh/id_ed25519"
+ssh_private_key_file = "~/.ssh/id_ed25519"
 answerfile_name = "answers"
