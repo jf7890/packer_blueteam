@@ -20,4 +20,5 @@ cloud_init_storage_pool = "local-lvm"
 
 dns_server = "1.1.1.1"
 pri_key = ""
+pub_key = ""
 answerfile_name = "answers"
