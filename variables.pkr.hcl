@@ -4,6 +4,10 @@ variable "template_prefix" {
   description = "Prefix tên template"
 }
 
+variable "pub_key" { 
+  type = string 
+  }
+
 variable "hostname" {
   type        = string
   default     = "blue-router"
@@ -91,7 +95,7 @@ variable "dns_server" {
   description = "DNS used in live ISO to fetch answerfile (DHCP may overwrite later)."
 }
 
-variable "ssh_private_key_file" {
+variable "pri_key" {
   type        = string
   description = "Private key path that matches ROOTSSHKEY in http/answers."
 }

@@ -93,7 +93,13 @@ source "proxmox-iso" "blueteam_router" {
   # =========================
   # Packer HTTP server (serves ./http)
   # =========================
-  http_directory = "http"
+  http_content = {
+    "/answers" = templatefile("${path.root}/http/answers.tpl", {
+      root_ssh_key = var.pub_key
+      dns_server   = var.dns_server
+      hostname     = var.hostname
+    })
+  }
 
   # =========================
   # Boot & unattended install (WAN DHCP)
@@ -124,7 +130,7 @@ source "proxmox-iso" "blueteam_router" {
   ssh_username          = "root"
   ssh_port              = 22
   ssh_timeout           = "25m"
-  ssh_private_key_file  = pathexpand(var.ssh_private_key_file)
+  ssh_private_key_file  = pathexpand(var.pri_key)
 
   # =========================
   # Cloud-init CDROM (rỗng) sau khi convert template
