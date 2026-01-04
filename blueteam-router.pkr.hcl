@@ -79,15 +79,15 @@ source "proxmox-iso" "blueteam_router" {
   }
   network_adapters {
     model  = "virtio"
-    bridge = "transit"
+    bridge = var.wan_bridge
   }
   network_adapters {
     model  = "virtio"
-    bridge = "dmz"
+    bridge = var.wan_bridge
   }
   network_adapters {
     model  = "virtio"
-    bridge = "blue"
+    bridge = var.wan_bridge
   }
 
   # =========================
