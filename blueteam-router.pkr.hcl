@@ -104,7 +104,7 @@ source "proxmox-iso" "blueteam_router" {
   # =========================
   # Boot & unattended install (WAN DHCP)
   # =========================
-  boot_wait = "10s"
+  boot_wait = "5s"
 
   boot_command = [
     "<enter><wait>",
@@ -113,12 +113,10 @@ source "proxmox-iso" "blueteam_router" {
     "ip link set eth0 up<enter>",
     "udhcpc -i eth0<enter>",
 
-    # nếu DHCP chưa set resolv.conf kịp thì ép tạm DNS để wget answerfile
     "echo nameserver ${var.dns_server} > /etc/resolv.conf<enter>",
 
     "wget -O /tmp/answers http://{{ .HTTPIP }}:{{ .HTTPPort }}/answers<enter>",
 
-    # Cài Alpine + cài qemu-guest-agent vào hệ đã cài để Packer lấy IP qua QGA
     "ERASE_DISKS=/dev/sda setup-alpine -e -f /tmp/answers && mount /dev/sda3 /mnt && apk add --root /mnt qemu-guest-agent && chroot /mnt rc-update add qemu-guest-agent default && reboot<enter>",
   ]
 

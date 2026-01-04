@@ -15,7 +15,7 @@ template_prefix = "tpl"
 hostname        = "blue-router"
 
 iso_storage_pool        = "hdd-data"
-wan_bridge              = "vmbr10"
+#wan_bridge              = "vmbr10"
 cloud_init_storage_pool = "local-lvm"
 
 dns_server = "1.1.1.1"

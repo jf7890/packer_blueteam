@@ -76,6 +76,7 @@ variable "memory_mb" {
 variable "iso_storage_pool" {
   type        = string
   description = "Proxmox storage pool to store the downloaded ISO (e.g. hdd-data)."
+  default = env("PACKER_INTERNET_BRIDGE_CARD")
 }
 
 variable "wan_bridge" {
