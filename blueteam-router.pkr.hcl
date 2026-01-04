@@ -95,7 +95,7 @@ source "proxmox-iso" "blueteam_router" {
   # =========================
   http_content = {
     "/answers" = templatefile("${path.root}/http/answers.tpl", {
-      root_ssh_key = var.pub_key
+      pub_key = var.pub_key
       dns_server   = var.dns_server
       hostname     = var.hostname
     })
